@@ -1,0 +1,35 @@
+name: Playwright Tests
+
+on:
+  push:
+    branches:
+      - main  # Run the workflow when pushing to the main branch
+  pull_request:
+    branches:
+      - main  # Run the workflow on pull requests to the main branch
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'  # Set the Node.js version
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Playwright Tests
+        run: npx playwright test
+
+      - name: Upload Playwright Test Results
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-test-results
+          path: test-results/  # Change this path to your test results output
