@@ -1,6 +1,6 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
-const LoginPage = require('..//pages/login');  // Import the LoginPage class
+const LoginPage = require('../pages/login');  // Import the LoginPage class
 
 test.describe("NoCode Collection Manager Form Tests", () =>{
   let loginPage;
@@ -9,14 +9,8 @@ test.describe("NoCode Collection Manager Form Tests", () =>{
 
     loginPage = new LoginPage(page);
     await loginPage.gotoLoginPage();
-    // await page.goto('http://nocode-dev.stratesfy.com/signin');
-    // await expect(page).toHaveTitle(/NoCodePlatform/);
+    await loginPage.login('admin@stratesfy.com', 'stratesfy'); 
 
-    // await page.type('input[name="email"]', 'admin@stratesfy.com');
-    // await page.type('input[name="password"]', 'stratesfy');
-    // await page.click('button[type="submit"]');
-
-    // await expect(page).toHaveURL('http://nocode-dev.stratesfy.com/signin');
     await page.waitForTimeout(1000);
     await page.goto('http://nocode-dev.stratesfy.com/settings/collection-manager');
 
@@ -28,17 +22,17 @@ test.describe("NoCode Collection Manager Form Tests", () =>{
     await page.click("//button[normalize-space()='Create collection']");
 
     // Fill collection details
-    await page.type("//input[@id='title']", "palywright automate");
+    await page.fill("//input[@id='title']", "palywright automate");
     //Collection name 
     await page.click("//input[@id='name']");
     await page.press("//input[@id='name']", "Control+A");
     await page.press("//input[@id='name']", "Backspace");
-    await page.type("//input[@id='name']", "play_test1");
+    await page.fill("//input[@id='name']", "play_test1");
 
     //Categries
-    await page.type("input[type='text']", "musharraf");
+    await page.fill("input[type='text']", "musharraf");
     //description
-    await page.type("//textarea[@id='description']", "Playwright automation of the collection manager with test script");
+    await page.fill("//textarea[@id='description']", "Playwright automation of the collection manager with test script");
 
     // Enable options
     await page.check("//button[@id='softDelete']");
@@ -66,7 +60,7 @@ test.describe("NoCode Collection Manager Form Tests", () =>{
   test('Should not allow creating a collection without a collection name', async ({ page }) => {
 
     await page.click("//button[normalize-space()='Create collection']");
-    await page.type("//input[@id='title']", "Test Collection");
+    await page.fill("//input[@id='title']", "Test Collection");
 
     // Leave the collection name field blank
     await page.click("//input[@id='name']");
@@ -84,11 +78,11 @@ test.describe("NoCode Collection Manager Form Tests", () =>{
   test('Should not allow creating a collection with invalid characters in the collection name', async ({ page }) => {
 
     await page.click("//button[normalize-space()='Create collection']");
-    await page.type("//input[@id='title']", "Test Collection");
+    await page.fill("//input[@id='title']", "Test Collection");
     await page.click("//input[@id='name']");
     await page.press("//input[@id='name']", "Control+A");
     await page.press("//input[@id='name']", "Backspace");
-    await page.type("//input[@id='name']", "123@collection#");
+    await page.fill("//input[@id='name']", "123@collection#");
     await page.click("//button[normalize-space()='Submit']");
 
     // Verify error message for invalid collection name

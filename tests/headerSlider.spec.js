@@ -8,6 +8,8 @@ test.describe("NoCode Login and ACL Management", () =>{
 
         loginPage = new LoginPage(page);
         await loginPage.gotoLoginPage();
+        await loginPage.login('admin@stratesfy.com', 'stratesfy'); 
+
     //   await page.goto('http://nocode-dev.stratesfy.com/signin');
     //   await expect(page).toHaveTitle(/NoCodePlatform/);
   
