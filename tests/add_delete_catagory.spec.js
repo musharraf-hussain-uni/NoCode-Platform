@@ -1,31 +1,33 @@
 // @ts-check
-const { test, chromium } = require('@playwright/test');
-const LoginPage = require('../pages/login');  // Import the LoginPage class
+const {
+  test,
+  chromium
+} = require('@playwright/test');
+const LoginPage = require('../pages/login'); // Import the LoginPage class
 
 test.describe("Add new Category and delete", () => {
-  let browser;
-  let context;
-  let page;
+
   let loginPage;
 
   // Set up a reusable page for all tests
-  test.beforeAll(async () => {
+  test.beforeEach(async ({
+    page
+  }) => {
     // Launch the browser and create a new context and page
-    browser = await chromium.launch({ headless: false }); // Set headless: true if you prefer headless mode
-    context = await browser.newContext();
-    page = await context.newPage();
 
     loginPage = new LoginPage(page); // Initialize the login page object
     await loginPage.gotoLoginPage(); // Navigate to the login page
     await loginPage.login('admin@stratesfy.com', 'stratesfy'); // Perform login
 
     // Wait for login and navigation
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(1000);
     await page.goto('http://nocode-dev.stratesfy.com/settings/collection-manager');
   });
 
   // Add new Category
-  test("Add new Category", async () => {
+  test("Add new Category", async ({
+    page
+  }) => {
     // Wait for the '+' button to be visible
     await page.waitForSelector("//button[normalize-space()='+']");
     await page.click("//button[normalize-space()='+']");
@@ -42,22 +44,43 @@ test.describe("Add new Category and delete", () => {
     await page.waitForSelector("//button[normalize-space()='Add']");
     await page.click("//button[normalize-space()='Add']");
 
+    await page.waitForSelector(`text=Musharraf 2.0`);
+
     // Verify the category was added (Optional: add a verification step)
     await page.waitForTimeout(1000); // Small wait to ensure the action is processed
   });
 
-  test("Delete Category", async ({page})=>{
-    await page.locator("//span[text()='Musharraf 2.0']/ancestor::tr");
-    
-    // Hover over the three dots icon using the CSS selector
-    await page.hover('#radix-\\:R1mjsv9uduba\\:-trigger-37 > a > svg > path');
+  test.only("Delete Category", async ({
+    page
+  }) => {
+    // Wait for the delete button to be visible
+    const category = page.locator("button#radix-\\:R1mjsv9uduba\\:-trigger-49");
 
+    // Wait for the button to be visible
+    await category.waitFor({
+      state: 'visible',
+      timeout: 3000
+    });
+    await category.click();
 
+    await page.waitForTimeout(1000);
+    // Wait for the dropdown (three dots) to be visible before interacting
+    const dropdownIcon = page.locator("button#radix-\\:R1mjsv9uduba\\:-trigger-49 svg");
+    await dropdownIcon.waitFor({
+      state: 'visible',
+      timeout: 3000
+    });
 
-  })
-  // Clean up after all tests
-  test.afterAll(async () => {
-    await context.close(); // Close the context
-    await browser.close();  // Close the browser
+    // Hover over the dropdown icon
+    await dropdownIcon.hover();
+
+    // Wait for 'Delete Category' option and click it
+    await page.waitForSelector("text=Delete Category");
+    await page.click("text=Delete Category");
+
+    // Optional: confirm the deletion if needed
+    await page.waitForTimeout(1000); // Small wait to ensure action is processed
   });
+
+
 });
