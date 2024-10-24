@@ -16,7 +16,7 @@ test.describe("NoCode Collection Manager Form Tests", () => {
 
     loginPage = new LoginPage(page);
     await loginPage.gotoLoginPage();
-    await loginpage.login('admin@stratesfy.com', 'stratesfy');
+    await loginPage.login('admin@stratesfy.com', 'stratesfy');
 
     await page.waitForTimeout(1000);
     await page.goto('http://nocode-dev.stratesfy.com/settings/collection-manager');
